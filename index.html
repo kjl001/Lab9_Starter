@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "094bd47b127c4ce1813499879e5d0eb9"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,25 +76,36 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button onclick="consoleLog()">Console Log</button>
+      <button onclick="consoleError()">Console Error</button>
+      <button onclick="consoleCount()">Console Count</button>
+      <button onclick="consoleWarn()">Console Warn</button>
+      <button onclick="consoleAssert()">Console Assert</button>
+      <button onclick="consoleClear()">Console Clear</button>
+      <button onclick="consoleDir(this)">Console Dir</button>
+      <button onclick="consoleDirxml(this)">Console dirxml</button>
+      <button onclick="consoleGroupStart()">Console Group Start</button>
+      <button onclick="consoleGroupEnd()">Console Group End</button>
+      <button onclick="consoleTable()">Console Table</button>
+      <button onclick="consoleStartTimer()">Start Timer</button>
+      <button onclick="consoleEndTimer()">End Timer</button>
+      <button onclick="consoleTrace()">Console Trace</button>
+      <button onclick="throwGlobalError()">Trigger a Global Error</button>
+      <!--<button id="ghost-button">Ghost Button</button>-->
     </section>
-  </main>
-
+  </main>                 
   <script>
+    window.onerror = function () {
+      console.log("ERROR ERROR ERROR ERROR");
+    }
+
+    class DivideByZeroError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "DivideByZeroError";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,13 +113,104 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
+
+      if(operator === "/" && secondNum == 0) {
+        throw new DivideByZeroError("Tried to divide by zero.");
+      }
+
       output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
     });
+
+    try {
+        document.getElementById("ghost-button").click();
+    } catch(err) {
+        console.log("ERROR: Tried to click a non-existant button!");
+    }
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    function consoleLog() {
+      console.log("Console Log Demo");
+    }
+
+    function consoleError() {
+      console.error("Console Error Demo");
+    }
+
+    function consoleCount() {
+      console.count("Count Button");
+    }
+
+    function consoleWarn() {
+      console.warn("Console Warn Button");
+    }
+
+    function consoleAssert() {
+      let number = 2;
+      let reason = "The number does not equal 3"
+      console.assert(number == 3, {number, reason})
+    }
+
+    function consoleClear() {
+      console.clear();
+    }
+
+    function consoleDir(button) {
+      console.dir(button);
+    }
+
+    function consoleDirxml(button) {
+      console.dirxml(button);
+    }
+
+    function consoleGroupStart() {
+      console.group("console.group");
+    }
+
+    function consoleGroupEnd() {
+      console.groupEnd("console.group");
+    }
+
+    function consoleTable() {
+      console.table([
+        {
+          name: "Software Engineering",
+          num: 110,
+        },
+        
+        {
+          name: "Programming Language",
+          num: 130,
+        },
+
+        {
+          name: "Advanced Software",
+          num: 112,
+        }
+      ]);
+    }
+
+    function consoleStartTimer() {
+      console.time();
+    }
+
+    function consoleEndTimer() {
+      console.timeEnd();
+    }
+
+    function consoleTrace() {
+      const deep = () => { deeper(); };
+      const deeper = () => { deepest(); };
+      const deepest = () => { console.trace(); };
+      deep();
+    }
+
+    function throwGlobalError() {
+      const changeThis = "hello";
+      changeThis = "goodbye";
+    }
   </script>
 </body>
 
